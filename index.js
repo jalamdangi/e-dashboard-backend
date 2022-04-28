@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 require('./db/config')
 const User = require('./db/User')
+const Product = require('./db/Product')
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -19,11 +20,26 @@ app.post('/login', async (req, res) => {
     if (user) {
       res.send(user)
     } else {
-      res.send({result :'user not found'})
+      res.send({ result: 'user not found' })
     }
   } else {
-    res.send({result :'Both fields are required'})
+    res.send({ result: 'Both fields are required' })
   }
 });
+
+app.post('/addproduct', async (req, res) => {
+  let product = new Product(req.body)
+  let result = await product.save()
+  res.send(result)
+})
+
+app.get('/productlist', async (req, res) => {
+  const products = await Product.find();
+  if (products.length > 0) {
+    res.send(products)
+  } else {
+    res.send({ result: "No Products Found" })
+  }
+})
 
 app.listen(5000)
