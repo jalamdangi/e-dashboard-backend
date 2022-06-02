@@ -1,18 +1,16 @@
 const express = require('express')
-const cors = require('cors')
+const app = express()
 require('./db/config')
 const User = require('./db/User')
-const Product = require('./db/Product')
-const { updateOne } = require('./db/User')
-const app = express()
+const Form = require('./db/Form')
 app.use(express.json())
+const cors = require('cors')
 app.use(cors())
 
 app.post('/register', async (req, res) => {
-  // res.send(req.body);
   let user = new User(req.body)
   let result = await user.save()
-  res.send(result.name)
+  res.send(result)
 })
 
 app.post('/login', async (req, res) => {
@@ -26,43 +24,20 @@ app.post('/login', async (req, res) => {
   } else {
     res.send({ result: 'Both fields are required' })
   }
-});
+})
 
-app.post('/addproduct', async (req, res) => {
-  let product = new Product(req.body)
-  let result = await product.save()
+app.post('/addform', async (req, res) => {
+  let form = new Form(req.body)
+  let result = await form.save()
   res.send(result)
 })
 
-app.get('/productlist', async (req, res) => {
-  const products = await Product.find();
-  if (products.length > 0) {
-    res.send(products)
-  } else {
-    res.send({ result: "No Products Found" })
-  }
-})
+// app.get('/',(req,res)=>{
+//   res.send("response to browser")
+//   console.log("response to cmd")
+// });
 
-app.delete('/deleteproduct/:id', async (req, res) => {
-  result = await Product.deleteOne({ _id: req.params.id })
-  res.send(result);
-})
 
-app.get('/fetchproductbyid/:id', async (req, res) => {
-  result = await Product.findOne({ _id: req.params.id })
-  if (result) {
-    res.send(result)
-  } else {
-    res.send({ result: "no record found" })
-  }
+app.listen(5000, () => {
+  console.log("server is running")
 })
-
-app.put('/updateproduct/:id', async(req, res)=>{
-  let result = await Product.updateOne(
-    {_id:req.params.id},
-    {$set:req.body}
-  )
-  res.send(result);
-})
-
-app.listen(5000)
